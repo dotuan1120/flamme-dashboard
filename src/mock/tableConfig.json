@@ -1,0 +1,147 @@
+[
+  {
+    "columnName": "name",
+    "columnType": "text",
+    "filterType": "text"
+  },
+  {
+    "columnName": "points",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "goals",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "secondAssists",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "assists",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "totalAssists",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "throws",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "throwCompletions",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "throwErrors",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "retentionRate",
+    "columnType": "percentage",
+    "filterType": "range"
+  },
+  {
+    "columnName": "catches",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "catchCompletion",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "catcherErrors",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "catchPercentage",
+    "columnType": "percentage",
+    "filterType": "range"
+  },
+  {
+    "columnName": "blocks",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "gDefensiveErrors",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "aDefensiveErrors",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "usageRate",
+    "columnType": "percentage",
+    "filterType": "range"
+  },
+  {
+    "columnName": "touches",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "matches",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "pointsPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "goalsPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "assistsPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "throwsPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "throwErrorsPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "catchesPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "catcherErrorsPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "blocksPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  },
+  {
+    "columnName": "touchesPerMatch",
+    "columnType": "number",
+    "filterType": "range"
+  }
+]
