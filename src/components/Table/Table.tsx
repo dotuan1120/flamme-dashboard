@@ -21,7 +21,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Switch } from 'antd'
+
 import { makeData } from '../../utils/makeData'
 import { Player } from '../../types'
 import { generateColumns } from '../../utils/generateColumns'
@@ -29,6 +29,7 @@ import DebouncedInput from './DebouncedInput'
 import Filter from './Filter'
 import { useSkipper } from '../../hooks/useSkipper'
 import { defaultColumn, fuzzyFilter, getTableMeta } from './tableModels'
+import { Switch } from '@mui/material'
 
 declare module '@tanstack/react-table' {
   //allows us to define custom properties for our columns
@@ -137,11 +138,10 @@ export const Table: React.FC = () => {
         </div>
         <div>
           <Switch
-            checkedChildren="Show settings"
-            unCheckedChildren="Hide settings"
-            defaultChecked={showSettings}
+            color="primary"
+            checked={showSettings}
             onChange={(value) => {
-              setShowSettings(value)
+              setShowSettings(value.target.checked)
             }}
           />
         </div>
@@ -299,3 +299,5 @@ export const Table: React.FC = () => {
     </>
   )
 }
+
+// export default Table
