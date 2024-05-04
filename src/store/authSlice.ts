@@ -169,7 +169,7 @@ export const authSlice = createSlice({
             ...state,
             authLoading: false,
             isLoggedIn: true,
-            token: localStorage[LOCAL_STORAGE_AUTH],
+            token: JSON.parse(localStorage[LOCAL_STORAGE_AUTH]).token,
             user: payload.data,
           };
         }

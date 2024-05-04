@@ -25,7 +25,7 @@ import { logout } from './store/authSlice.ts'
 let persistor = persistStore(store)
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
-const Table = lazy(() => import('./components/Table'))
+const Dashboard = lazy(() => import('./components/Dashboard'))
 const Home = lazy(() => import('./pages/Home'))
 
 const Loading: React.FC = () => {
@@ -34,7 +34,7 @@ const Loading: React.FC = () => {
 const ProtectedRoute: React.FC = () => {
   // const { user } = useAppSelector((state) => state.auth)
   const dispatch = useAppDispatch()
-  const auth = !!localStorage[LOCAL_STORAGE_AUTH] && JSON.parse(localStorage[LOCAL_STORAGE_AUTH]) as AuthLocalStorage
+  const auth = localStorage[LOCAL_STORAGE_AUTH] ? JSON.parse(localStorage[LOCAL_STORAGE_AUTH]) as AuthLocalStorage : null
   const location = useLocation()
   if (auth && auth.accessTokenExpiry * 1000 < Date.now()) {
     dispatch(logout())
@@ -67,7 +67,7 @@ const router = createBrowserRouter(
         <Route path="/register" element={<Register />} /> // TODO: handle register even when user logged in
       </Route>
       <Route path="" element={<ProtectedRoute />}>
-        <Route path="/table" element={<Table />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Route>
   )

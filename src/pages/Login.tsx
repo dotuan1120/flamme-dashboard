@@ -54,7 +54,7 @@ const Login = () => {
   // };
 
   useEffect(() => {
-    if (!!user || localStorage[LOCAL_STORAGE_AUTH]) {
+    if (!!localStorage[LOCAL_STORAGE_AUTH]) {
       navigate(from, { replace: true });
     }
   }, []);

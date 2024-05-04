@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import './index.css'
 
@@ -29,7 +29,7 @@ import DebouncedInput from './DebouncedInput'
 import Filter from './Filter'
 import { useSkipper } from '../../hooks/useSkipper'
 import { defaultColumn, fuzzyFilter, getTableMeta } from './tableModels'
-import { Switch } from '@mui/material'
+import { Button, Switch, TextField } from '@mui/material'
 
 declare module '@tanstack/react-table' {
   //allows us to define custom properties for our columns
@@ -38,40 +38,19 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export const Table: React.FC = () => {
-  // const rerender = React.useReducer(() => ({}), {})[1]
-
+type TableProps = {
+  data: Player[]
+}
+export const Table: React.FC<TableProps> = ({ data }) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
   const columns = React.useMemo<ColumnDef<Player, any>[]>(() => generateColumns(), [])
-
-  const [data, setData] = React.useState<Player[]>(() => makeData(5_000))
-  // const refreshData = () => setData((_old) => makeData(100_000)) //stress test
-
-  // const table = useReactTable({
-  //   data,
-  //   columns,
-  //   state: {
-  //     columnFilters,
-  //   },
-  //   onColumnFiltersChange: setColumnFilters,
-  //   getCoreRowModel: getCoreRowModel(),
-  //   getFilteredRowModel: getFilteredRowModel(), //client-side filtering
-  //   getSortedRowModel: getSortedRowModel(),
-  //   getPaginationRowModel: getPaginationRowModel(),
-  //   getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-  //   getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
-  //   getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
-  //   debugTable: true,
-  //   debugHeaders: true,
-  //   debugColumns: false,
-  // })
-
-  // const [data, setData] = React.useState(makeData(1000))
-  // const refreshData = () => setData(makeData(1000))
+  // const [year, setYear] = useState(new Date().getFullYear())
+  // const [ trigger, { data: queryData = []} ] = useLazyGetStatsByTeamIdQuery()
+  // const [data, setData] = React.useState<Player[]>([])
 
   const [columnVisibility, setColumnVisibility] = React.useState({})
-  const [grouping, setGrouping] = React.useState<GroupingState>([])
+  const [grouping, setGrouping] = useState<GroupingState>([])
   // const [isSplit, setIsSplit] = React.useState(false)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnPinning, setColumnPinning] = React.useState({})
@@ -102,7 +81,7 @@ export const Table: React.FC = () => {
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: setRowSelection,
     // Provide our updateData function to our table meta
-    meta: getTableMeta(setData, skipAutoResetPageIndex),
+    // meta: getTableMeta(setData, skipAutoResetPageIndex),
     state: {
       grouping,
       columnFilters,
@@ -116,14 +95,29 @@ export const Table: React.FC = () => {
     debugColumns: true,
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (table.getState().columnFilters[0]?.id === 'fullName') {
       if (table.getState().sorting[0]?.id !== 'fullName') {
         table.setSorting([{ id: 'fullName', desc: false }])
       }
     }
   }, [table.getState().columnFilters[0]?.id])
+  // useEffect(() => {
+  //   setData(queryData)
+  // }, [queryData])
+  // useEffect(() => {
+  //   getData()
+  // },[])
+  // const handleYearChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  //   const onlyNums = Number(e.target.value.replace(/[^0-9]/g, ''));
+  //   setYear(onlyNums)
+  // }
 
+  // const getData = () => {
+  //   trigger({ teamId: 1, year: year })
+  // }
+
+  console.log('table', table.getHeaderGroups())
   return (
     <>
       <div className="flex items-center gap-2">
@@ -145,11 +139,17 @@ export const Table: React.FC = () => {
             }}
           />
         </div>
+        {/* <div>
+          <TextField label="Year" variant="outlined" value={year.toString()} onChange={(e) => {handleYearChange(e)}}/>
+        </div>
+        <div>
+          <Button onClick={getData}>Get Data</Button>
+        </div> */}
       </div>
 
       {showSettings && (
-        <div className="p-2 inline-block border border-black shadow rounded">
-          <div className="px-1 border-b border-black">
+        <div className="grid grid-cols-5 p-2 inline-block border border-black shadow rounded mt-2">
+          <div className="px-1 border-black">
             <label>
               <input
                 type="checkbox"
@@ -177,9 +177,9 @@ export const Table: React.FC = () => {
           })}
         </div>
       )}
-      <div className="p-2">
+      <div className="max-w-full overflow-scroll max-h-[30rem]">
         <table>
-          <thead>
+          <thead className='sticky top-0 bg-slate-600 text-white'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

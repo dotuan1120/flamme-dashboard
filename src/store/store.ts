@@ -8,6 +8,7 @@ import { persistReducer } from "redux-persist";
 import authReducer from "./authSlice";
 import storage from "redux-persist/lib/storage";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { apiSlice } from "./apiSlice";
 
 export type AuthLocalStorage = {
   token: string
@@ -15,12 +16,14 @@ export type AuthLocalStorage = {
 }
 
 const rootReducer = combineReducers({
-  auth: authReducer
+  auth: authReducer,
+  api: apiSlice.reducer,
 });
 
 const persistConfig = {
   key: "rootFlamme",
   storage,
+  blacklist: ['api'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -28,7 +31,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
+    getDefaultMiddleware({ serializableCheck: false }).concat(apiSlice.middleware),
   devTools: true,
 });
 
