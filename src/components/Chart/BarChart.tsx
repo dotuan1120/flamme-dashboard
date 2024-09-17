@@ -10,9 +10,14 @@ type ChartProps = {
   setErrorMessage: (message: string) => void
 }
 
-type PlayerStats = {
+enum Settings {
+  stats = "stats",
+  players = "players"
+}
+type DataDisplay = {
   currentShow: number
-  stats: {
+  data: {
+    _id?: string
     name: string
     isShow: boolean
   }[]
@@ -26,44 +31,99 @@ const MIN_DISPLAY_STATS = 1
 const DEFAULT_STATS = ["points", "goals", "secondAssists", "assists", "totalAssists"]
 export const CustomBarChart: React.FC<ChartProps> = ({ data, setErrorMessage }) => {
   useEffect(() => {
-    setDisplayStats({currentShow: MAX_DISPLAY_STATS, stats: Object.keys(data[0] || {}).map((stat) => ({name: stat, isShow: DEFAULT_STATS.includes(stat)}))})
+    setDisplayStats({currentShow: MAX_DISPLAY_STATS, data: Object.keys(data[0] || {}).map((stat) => ({name: stat, isShow: DEFAULT_STATS.includes(stat)}))})
+    setDisplayPlayers({currentShow: data.length, data: data.map((player) => ({_id: player._id, name: player.name, isShow: true}))})
   }, [data])
 
-  const [showSettings, setShowSettings] = useState(false)
-  const [displayStats, setDisplayStats] = useState<PlayerStats>({currentShow: 0, stats: []})
-  const showStatsBars = displayStats.stats.filter(({isShow}) => isShow).map((stat, index) => {
+  // settings object
+  // Object: setting - isShow -> stats : false
+  const [showSettings, setShowSettings] = useState({
+    stats: false,
+    players: false
+  })
+  const initDataDisplay = {currentShow: 0, data: []}
+  const [displayStats, setDisplayStats] = useState<DataDisplay>(initDataDisplay)
+  const [displayPlayers, setDisplayPlayers] = useState<DataDisplay>(initDataDisplay)
+  const showStatsBars = displayStats.data.filter(({isShow}) => isShow).map((stat, index) => {
     return <Bar key={stat.name} name={beautifyWord(stat.name)} dataKey={stat.name} fill={COLOR_CODE[index]} />
   })
-  const showStats = (e:React.ChangeEvent<HTMLInputElement>, stat: string) => {
-    switch (e.target.checked) {
-      case true:
-        if (displayStats.currentShow === MAX_DISPLAY_STATS) {
-          setErrorMessage("You can only show up to 5 stats")
-          return
-        } else {
-          setDisplayStats({
-            ...displayStats,
-            currentShow: displayStats.currentShow + 1,
-            stats: displayStats.stats.map((displayStat) => displayStat.name === stat ? {...displayStat, isShow: true} : displayStat)
-          })
-        }
+  const showData = (e:React.ChangeEvent<HTMLInputElement>, data: string, setting: Settings) => {
+    switch (setting) {
+      case Settings.stats:
+        setDisplayStats({
+          ...displayStats,
+          currentShow: e.target.checked ? displayStats.currentShow + 1 : displayStats.currentShow - 1,
+          data: displayStats.data.map((displayStat) => displayStat.name === data ? {...displayStat, isShow: e.target.checked} : displayStat)
+        })
+        break
+      case Settings.players:
+        setDisplayPlayers({
+          ...displayPlayers,
+          currentShow: e.target.checked ? displayPlayers.currentShow + 1 : displayPlayers.currentShow - 1,
+          data: displayPlayers.data.map((displayPlayer) => displayPlayer._id === data ? {...displayPlayer, isShow: e.target.checked} : displayPlayer)
+        })
         break
       default:
-        if (displayStats.currentShow === MIN_DISPLAY_STATS) {
-          setErrorMessage("Must show at least 1 stats")
-          return
-        } else {
-          setDisplayStats({
-            ...displayStats,
-            currentShow: displayStats.currentShow - 1,
-            stats: displayStats.stats.map((displayStat) => displayStat.name === stat ? {...displayStat, isShow: false} : displayStat)
-          })
-        }
+        return
     }
+
+  }
+  const showStats = (e:React.ChangeEvent<HTMLInputElement>, stat: string) => {
+    if (displayStats.currentShow === MAX_DISPLAY_STATS && e.target.checked) {
+      setErrorMessage("You can only show up to 5 stats")
+      return
+    }
+    if (displayStats.currentShow === MIN_DISPLAY_STATS && !e.target.checked) {
+      setErrorMessage("Must show at least 1 stat")
+      return
+    }
+    showData(e, stat, Settings.stats)
+    // if (displayStats.currentShow === MIN_DISPLAY_STATS && !e.target.checked) {
+    //   setErrorMessage("Must show at least 1 stat")
+    //   return
+    // }
+    // setDisplayStats({
+    //   ...displayStats,
+    //   currentShow: e.target.checked ? displayStats.currentShow + 1 : displayStats.currentShow - 1,
+    //   data: displayStats.data.map((displayStat) => displayStat.name === stat ? {...displayStat, isShow: e.target.checked} : displayStat)
+    // })
+    // switch (e.target.checked) {
+    //   case true:
+    //     if (displayStats.currentShow === MAX_DISPLAY_STATS) {
+    //       setErrorMessage("You can only show up to 5 stats")
+    //       return
+    //     } else {
+    //       setDisplayStats({
+    //         ...displayStats,
+    //         currentShow: displayStats.currentShow + 1,
+    //         data: displayStats.data.map((displayStat) => displayStat.name === stat ? {...displayStat, isShow: true} : displayStat)
+    //       })
+    //     }
+    //     break
+    //   default:
+    //     if (displayStats.currentShow === MIN_DISPLAY_STATS) {
+    //       setErrorMessage("Must show at least 1 stat")
+    //       return
+    //     } else {
+    //       setDisplayStats({
+    //         ...displayStats,
+    //         currentShow: displayStats.currentShow - 1,
+    //         data: displayStats.data.map((displayStat) => displayStat.name === stat ? {...displayStat, isShow: false} : displayStat)
+    //       })
+    //     }
+    // }
+  }
+  const showPlayers = (e:React.ChangeEvent<HTMLInputElement>, playerId: string | undefined) => {
+    if (displayPlayers.currentShow === MIN_DISPLAY_STATS && !e.target.checked) {
+      setErrorMessage("Must show at least 1 player")
+      return
+    }
+    if (playerId) showData(e, playerId, Settings.players)
   }
 
   const createBarChart = (data: Player[]) => {
-    const chunkedData = chunk(data, 10)
+    const displayPlayerIds = displayPlayers.data.filter(({isShow}) => isShow).map(({_id}) => _id)
+    const chunkedData = chunk(data.filter(data => displayPlayerIds.includes(data._id)), 10)
     return chunkedData.map((chunkData, index) => {
       return (
         <ResponsiveContainer key={index} minWidth={750} minHeight={250} width="100%" height="50%">
@@ -88,17 +148,35 @@ export const CustomBarChart: React.FC<ChartProps> = ({ data, setErrorMessage }) 
           <div>
             <Switch
               color="primary"
-              checked={showSettings}
+              checked={showSettings.stats}
               onChange={(value) => {
-                setShowSettings(value.target.checked)
+                setShowSettings({...showSettings, stats: value.target.checked})
               }}
             />
           </div>
         </div>
-        {displayStats && showSettings?
+        {displayStats && showSettings.stats?
         <div className="grid grid-cols-5">
-          {displayStats.stats.map((stat) => {
+          {displayStats.data.map((stat) => {
             return <div><input key={stat.name} type="checkbox" checked={stat.isShow} onChange={(e) => {showStats(e, stat.name)}}/> {beautifyWord(stat.name)}</div>
+          })}
+        </div>: <></>}
+        <div className="flex items-center gap-2">
+          <Typography>Players</Typography>
+          <div>
+            <Switch
+              color="primary"
+              checked={showSettings.players}
+              onChange={(value) => {
+                setShowSettings({...showSettings, players: value.target.checked})
+              }}
+            />
+          </div>
+        </div>
+        {displayPlayers && showSettings.players?
+        <div className="grid grid-cols-5">
+          {displayPlayers.data.map((player) => {
+            return <div><input key={player._id} type="checkbox" checked={player.isShow} onChange={(e) => {showPlayers(e, player._id)}}/> {beautifyWord(player.name)}</div>
           })}
         </div>: <></>}
       </div>

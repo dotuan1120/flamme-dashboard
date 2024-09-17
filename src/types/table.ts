@@ -1,8 +1,10 @@
 export type User = {
+  _id: string
   name: string
 }
 
 export type Statistic = {
+  _id: string
   points: number
   goals: number
   secondAssists: number
@@ -24,6 +26,7 @@ export type Statistic = {
 }
 
 export type GeneralStatistics = {
+  _id: string
   matches: number
   pointsPerMatch: number
   goalsPerMatch: number
